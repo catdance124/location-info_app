@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>GPS の値を得る</title>
+</head>
+<body>
+    <div id="txt">ここにデータを表示</div>
+
+    <script>
+        // GPS値が変化したら実行される
+        navigator.geolocation.watchPosition((position) => {
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;
+            var acc = position.coords.accuracy;
+            displayLocation(lat, lng, acc);
+            sendLocation(lat, lng, acc);
+        }, (error) => {
+        }, {
+            enableHighAccuracy: true
+        });
+
+        // 取得したデータを表示
+        function displayLocation(lat, lng, acc) {
+            var txt = document.getElementById("txt");
+            txt.innerHTML = "緯度, 経度: " + lat + ", " + lng + "<br>" + "精度: " + acc;
+        }
+
+        function sendLocation(lat, lng, acc) {
+            var data = {
+                "lat": lat,
+                "lng": lng,
+                "acc": acc
+            }
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/send-location");
+            xhr.send(JSON.stringify(data));
+        }
+    </script>
+</body>
+</html>
