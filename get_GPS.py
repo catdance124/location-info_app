@@ -14,13 +14,14 @@ def index():
 @app.route('/send-location', methods=['POST'])
 def send():
     data = json.loads(request.data.decode('utf-8'))
+    remote_addr = request.remote_addr
     lat = data["lat"]
     lng = data["lng"]
     acc = data["acc"]
-    print(lat, lng, acc)
+    print(data["route_id"], data["route_name"])
+    print(lat, lng, acc, remote_addr)
     return ''
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', threaded=True, debug=True, \
-      port=8080, ssl_context=context)
+    app.run(host='0.0.0.0', threaded=True, debug=True, port=8080, ssl_context=context)
