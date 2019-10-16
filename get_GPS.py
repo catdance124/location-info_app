@@ -38,7 +38,7 @@ def send():
     df = pd.read_pickle('./df.pkl')
     record = pd.Series([addr, route_id, route_name, lat, lng], index=df.columns)
     df = df.append(record, ignore_index=True)
-    df = df.drop_duplicates(keep=False, subset='addr')
+    df = df.drop_duplicates(keep=False, subset=['addr', 'route_id'])
     df.to_pickle('./df.pkl')
     return ''
 
