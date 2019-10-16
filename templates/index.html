@@ -6,14 +6,17 @@
     <title>GPS の値を得る</title>
 </head>
 <body>
+    <!-- 経路情報を選択 -->
     <select id="route_select">
         <option value="id0" selected>指定なし</option>
         <option value="id1">鹿児島-福岡</option>
         <option value="id2">鹿児島-長崎</option>
         <option value="id3">鹿児島-沖縄</option>
     </select>
+    <!-- 位置情報表示部分 -->
     <div id="txt">ここにデータを表示</div>
     <br>
+    <!-- 経路情報表示部分 -->
     <div id="route"></div>
 </body>
 <script>
@@ -28,7 +31,9 @@
     }, (error) => {
         alert('GPS情報が取得できません．権限を確認してください')
     }, {
-        enableHighAccuracy: true
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 10000
     });
 
     // 経路情報を取得
