@@ -3,68 +3,20 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>GPS の値を得る</title>
+    <title>基本情報入力画面</title>
 </head>
 <body>
-    <!-- 経路情報を選択 -->
-    <select id="route_select">
-        <option value="id0" selected>指定なし</option>
-        <option value="id1">鹿児島-福岡</option>
-        <option value="id2">鹿児島-長崎</option>
-        <option value="id3">鹿児島-沖縄</option>
-    </select>
-    <!-- 位置情報表示部分 -->
-    <div id="txt">ここにデータを表示</div>
-    <br>
-    <!-- 経路情報表示部分 -->
-    <div id="route"></div>
+    <!-- 基本情報を入力するフォーム -->
+    <form action="/" method="POST">
+        <p>ユーザ名を入力</p>
+        <input name="user_name"></input>
+        <p>ルートを選択</p>
+        <select name="route_select">
+            {% for route in routes %}
+            <option value="{{ route[1] }}">{{ route[1] }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="submit"/>
+    </form>
 </body>
-<script>
-    // GPS値が変化したら実行される
-    navigator.geolocation.watchPosition((position) => {
-        var lat = position.coords.latitude;
-        var lng = position.coords.longitude;
-        var acc = position.coords.accuracy;
-        var {route_id, route_name} = getRoute();
-        displayLocation(lat, lng, acc, route_id, route_name);
-        sendLocation(lat, lng, acc, route_id, route_name);
-    }, (error) => {
-        alert('GPS情報が取得できません．権限を確認してください')
-    }, {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 10000
-    });
-
-    // 経路情報を取得
-    function getRoute() {
-        var obj = document.getElementById("route_select");
-        var idx = obj.selectedIndex;
-        var route_id = obj.options[idx].value;
-        var route_name = obj.options[idx].text;
-        return { route_id, route_name};
-    }
-
-    // 取得したデータを表示
-    function displayLocation(lat, lng, acc, route_id, route_name) {
-        var txt = document.getElementById("txt");
-        txt.innerHTML = "緯度, 経度: " + lat + ", " + lng + "<br>" + "精度: " + acc;
-        var route = document.getElementById("route");
-        route.innerHTML = "経路ID: " + route_id + ", 経路名: " + route_name;
-    }
-
-    // 取得したデータをサーバへ送信
-    function sendLocation(lat, lng, acc, route_id, route_name) {
-        var data = {
-            "lat": lat,
-            "lng": lng,
-            "acc": acc,
-            "route_id": route_id,
-            "route_name": route_name
-        }
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/send-location");
-        xhr.send(JSON.stringify(data));
-    }
-</script>
 </html>

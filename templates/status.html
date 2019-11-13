@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>GPS情報を送信中</title>
+</head>
+<body>
+    <!-- 位置情報表示部分 -->
+    <div id="txt">ここにデータを表示</div>
+    <br>
+    <!-- 経路情報表示部分 -->
+    <div>ユーザID：{{ user_name }}</div>
+    <div>経路名：{{ route_name }}</div>
+</body>
+<script>
+    // GPS値が変化したら実行される
+    navigator.geolocation.watchPosition((position) => {
+        var lat = position.coords.latitude;
+        var lon = position.coords.longitude;
+        var acc = position.coords.accuracy;
+        displayLocation(lat, lon, acc);
+        sendLocation(lat, lon);
+    }, (error) => {
+        alert('GPS情報が取得できません．権限を確認してください')
+    }, {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 10000
+    });
+
+    // 取得したデータを表示
+    function displayLocation(lat, lon, acc) {
+        var txt = document.getElementById("txt");
+        txt.innerHTML = "緯度, 経度: " + lat + ", " + lon + "<br>" + "精度: " + acc;
+    }
+
+    // 取得したデータをサーバへ送信
+    function sendLocation(lat, lon) {
+        var data = {
+            "user_name": "{{user_name}}",
+            "route_name": "{{route_name}}",
+            "lat": lat,
+            "lon": lon,
+        }
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/send-location");
+        xhr.send(JSON.stringify(data));
+    }
+</script>
+</html>
