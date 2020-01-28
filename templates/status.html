@@ -14,25 +14,34 @@
     <div>経路名：{{ route_name }}</div>
 </body>
 <script>
+    window.onload = function(){
+        //20秒毎に呼び出す
+        setInterval("getPosition()", 20000);
+    }
+
     // GPS値が変化したら実行される
-    navigator.geolocation.watchPosition((position) => {
-        var lat = position.coords.latitude;
-        var lon = position.coords.longitude;
-        var acc = position.coords.accuracy;
-        displayLocation(lat, lon, acc);
-        sendLocation(lat, lon);
-    }, (error) => {
-        alert('GPS情報が取得できません．権限を確認してください')
-    }, {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 10000
-    });
+    function getPosition(){
+        navigator.geolocation.getCurrentPosition((position) => {
+            var lat = position.coords.latitude;
+            var lon = position.coords.longitude;
+            var acc = position.coords.accuracy;
+            displayLocation(lat, lon, acc);
+            sendLocation(lat, lon);
+        }, (error) => {
+            alert('GPS情報が取得できません．権限を確認してください')
+        }, {
+            enableHighAccuracy: true,
+            maximumAge: 0,
+            timeout: 10000
+        });
+    }
 
     // 取得したデータを表示
     function displayLocation(lat, lon, acc) {
         var txt = document.getElementById("txt");
-        txt.innerHTML = "緯度, 経度: " + lat + ", " + lon + "<br>" + "精度: " + acc;
+        txt.innerHTML = "送信時刻:" + new Date() + "<br>" +
+        "緯度, 経度: " + lat + ", " + lon + "<br>" + 
+        "精度: " + acc;
     }
 
     // 取得したデータをサーバへ送信
