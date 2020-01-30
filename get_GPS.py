@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, make_response, render_template, request, redirect, url_for
+from flask_httpauth import HTTPBasicAuth
 from flask_googlemaps import GoogleMaps, Map
 import ssl, datetime, json
 import sqlite3
@@ -14,8 +15,25 @@ context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)    # 位置情報取得はhttps�
 context.load_cert_chain('cert/server.crt', 'cert/server.key')
 dbname = 'flask-app.db'
 
+# basic auth
+auth = HTTPBasicAuth()
+registered_users = {
+    'user': 'password',
+}
+
+@auth.get_password
+def get_pw(user):
+    if user in registered_users:
+        return registered_users.get(user)
+    return None
+
+@auth.error_handler
+def unauthorized_error():
+    return make_response(render_template('unauthorized.html'), 401)
+
 # 位置情報を送信させるページ
 @app.route("/", methods=["GET", "POST"])
+@auth.login_required
 def index():
     if request.method == "GET":
         with closing(sqlite3.connect(dbname)) as con:
