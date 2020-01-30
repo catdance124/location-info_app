@@ -42,6 +42,7 @@ def send():
         cursor.execute("REPLACE INTO location_info VALUES (?, ?, ?, ?, ?, ?)", \
             (user_name, route_name, update_time, lat, lon, addr))
         con.commit()
+        print(user_name, route_name, update_time, lat, lon, addr)
     return ''
 
 # POSTされた情報を地図に描画するページ
@@ -49,7 +50,9 @@ def send():
 def mapview():
     with closing(sqlite3.connect(dbname)) as con:
         cursor = con.cursor()
-        cursor.execute('SELECT lat, lon, route_name FROM location_info')
+        lim = (datetime.datetime.now()-datetime.timedelta(minutes=5)).strftime('%Y/%m/%d %H:%M:%S')
+        cursor.execute("SELECT lat, lon, route_name FROM location_info "+
+            f"WHERE update_time >= '{lim}'")
         location_info = cursor.fetchall()
     # location_info
     # df = pd.read_pickle('./df.pkl')
